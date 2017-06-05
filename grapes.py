@@ -23,36 +23,33 @@ def main():
     for sheet in excel_workbook:
         print("Sheet - {}".format(sheet.title))
 
+        final_grade = 0
+
         # Loop over rows (starting at 3)
-        for row in sheet.iter_rows(min_row=3, min_col=1, max_col=4):
+        for row in sheet.iter_rows(min_row=3, min_col=1, max_col=5):
+            if row[0].value == None:
+                break
             percentage = get_percentage(row[3].value)
-            print("\tAssignment {} - {:.3f}%".format(row[0].value, float(row[2].value) * percentage))
-            #for cell in row:
-            #    print(cell.value)
+            part_of_grade = float(row[2].value) * percentage
+            final_grade += part_of_grade
+            print("\tAssignment {} - {:.2f}%".format(row[0].value, part_of_grade))
 
-
-
-        # Get Weight percentage (ex: 4)
+            # Save part of grade
+            row[4].value = part_of_grade
 
         # Get Grade Received (ex: 90)
-
-        # TODO:check formatting
-
-        # Find Grade Contribution (ex: 4 * (90/100))
-
-        # Print all values
-
-        # Save Grade Contribution
+        print("FINAL GRADE in {} so far -> {:.2f}%\n".format(sheet.title, final_grade))
 
     # Save Worksheet
-
-    # Print Happy Message
+    excel_workbook.save(excel_name)
 
 def get_percentage(grade):
-    if isinstance(grade, (int,float)):
-        if grade < 1:
+    if grade == None:
+        return 0
+    elif isinstance(grade, (int,float)):
+        if grade <= 1:
             return float(grade)
-        elif grade < 100:
+        elif grade <= 100:
             return float(grade)/100
         else:
             print("Error: Not a valid grade")
